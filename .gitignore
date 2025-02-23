@@ -4,6 +4,11 @@
 node_modules/
 android
 ios
+.yarn
+
+# my changes
+app/(tabs)/index2.tsx
+
 
 # Expo
 .expo/
