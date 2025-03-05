@@ -5,7 +5,7 @@ import { Colors } from "@/constants/Colors";
 export default function HomeTopBar() {
   return (
     <View style={style.container}>
-      <Text style={style.title}>{`Hello,Sourav !`}</Text>
+      <Text style={style.title}>{`Hello,User !`}</Text>
       <Pressable
         style={style.bellBackground}
         onPress={() => Alert.alert("Noti")}

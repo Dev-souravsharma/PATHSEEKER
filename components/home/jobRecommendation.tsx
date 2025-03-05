@@ -1,5 +1,7 @@
 import { Colors } from "@/constants/Colors";
 import { View, Text, StyleSheet, Pressable, FlatList } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { moderateScale } from "@/constants/responsive";
 
 const data = [
   {
@@ -73,56 +75,108 @@ const data = [
     salary: "$7000",
   },
 ];
+
 export default function JobRecommendation() {
   return (
     <>
-      <View style={style.container}>
-        <Text style={style.category}>{"Job Recommendation"}</Text>
-        <Pressable style={{ alignItems: "center" }}>
-          <Text style={style.seeAll}>{"See all"}</Text>
+      <View style={styles.container}>
+        <Text style={styles.category}>{"Job Recommendation"}</Text>
+        <Pressable style={styles.seeAllPressable}>
+          <Text style={styles.seeAll}>{"See all"}</Text>
         </Pressable>
       </View>
       <FlatList
         data={data}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.listContainer}
         renderItem={({ item }) => {
           return (
-            <View style={style.item}>
-              <Text style={style.jobType}>{item.jobType}</Text>
-              <Text>{item.company}</Text>
-              <View></View>
-              <Text>{item.location}</Text>
-              <Text>{item.category}</Text>
+            <View style={styles.item}>
+              <View style={styles.jobHeader}>
+                <Text style={styles.jobType}>{item.jobType}</Text>
+                <Text style={styles.company}>{item.company}</Text>
+              </View>
+              
+              <View style={styles.jobDetails}>
+                <View style={styles.detailItem}>
+                  <Ionicons name="location-outline" size={16} color={Colors.light.tabIconDefault} />
+                  <Text style={styles.detailText}>{item.location}</Text>
+                </View>
+                <View style={styles.detailItem}>
+                  <Ionicons name="time-outline" size={16} color={Colors.light.tabIconDefault} />
+                  <Text style={styles.detailText}>{item.category}</Text>
+                </View>
+                <View style={styles.detailItem}>
+                  <Ionicons name="cash-outline" size={16} color={Colors.light.tabIconDefault} />
+                  <Text style={styles.detailText}>{item.salary}/month</Text>
+                </View>
+              </View>
             </View>
           );
         }}
+        keyExtractor={(item, index) => index.toString()}
       />
     </>
   );
 }
 
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: moderateScale(10),
+    paddingHorizontal:  moderateScale(16),
+  },
+  category: {
+    fontSize:  moderateScale(18),
+    fontWeight: "bold",
+    color: Colors.light.text,
+  },
+  seeAllPressable: {
+    alignItems: "center",
+  },
   seeAll: {
     textDecorationLine: "underline",
     color: Colors.light.tint,
     fontWeight: "bold",
   },
-  container: {
+  listContainer: {
+    paddingHorizontal: moderateScale(16),
+  },
+  item: {
+    backgroundColor: "white",
+    padding:  moderateScale(16),
+    borderRadius: moderateScale(10),
+    marginBottom: moderateScale(10),
+    borderWidth: 0.5,
+    borderColor: "#E0E0E0",
+  },
+  jobHeader: {
+    marginBottom: 12,
+  },
+  jobType: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: Colors.light.text,
+    marginBottom: 4,
+  },
+  company: {
+    fontSize: 14,
+    color: Colors.light.tabIconDefault,
+  },
+  jobDetails: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
-    paddingHorizontal: 16,
   },
-  category: {
-    fontSize: 16,
-    fontWeight: "bold",
+  detailItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
   },
-  item: {
-    backgroundColor: "lightgreen",
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 10,
-    marginHorizontal: 8,
+  detailText: {
+    fontSize: 12,
+    color: Colors.light.tabIconDefault,
   },
-  jobType: { fontSize: 16, fontWeight: "bold" },
 });

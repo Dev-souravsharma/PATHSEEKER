@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, StyleSheet } from "react-native";
+import { View, Text, SafeAreaView, StyleSheet, Alert } from "react-native";
 import React, { useState } from "react";
 import { moderateScale } from "@/constants/responsive";
 import { Colors } from "@/constants/Colors";
@@ -7,94 +7,57 @@ import RNButton from "@/components/button";
 import Spacer from "@/components/spacer";
 import { useRouter } from "expo-router";
 import auth from "@react-native-firebase/auth";
-import firebase from "@react-native-firebase/app";
 
 export default function SignUp() {
-  const [name, setName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const router = useRouter();
-  const navigateToSignUp = () => {
-    router.back();
-  };
+  const navigateToSignIn = () => router.back();
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBSo-VpjZDui9OlQy5cc0r_XIWZZVrjAMw",
-    authDomain: "pathseeker-80008.firebaseapp.com",
-    //databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
-    projectId: "pathseeker-80008",
-    //messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "1:164659582194:android:9ccacde869c012445eac6b",
-  };
-
-  // Initialize Firebase only if not already initialized
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  } else {
-    firebase.app(); // if already initialized
-  }
-
-  async function loginGoogle(email: string, pass: string) {
+  async function signUpWithEmail(email: string, password: string) {
     try {
-      const user = await 
-        auth()
-        .createUserWithEmailAndPassword(email, password);
-      console.log("🚀 ~ loginGoogle ~ user:", user);
-    } catch (error) {
-      console.log("🚀 ~ loginGoogle ~ error:", error);
+      const userCredential = await auth().createUserWithEmailAndPassword(email, password);
+      console.log("User signed up:", userCredential.user);
+      Alert.alert("Success", "Sign-up successful!");
+
+      // Clear fields after successful signup
+      setName("");
+      setEmail("");
+      setPassword("");
+    } catch (error: any) {
+      console.log("Sign-up error:", error);
+      Alert.alert("Error", error.message);
     }
   }
+
+  const handleSignUp = async () => {
+    if (!name || !email || !password) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+    await signUpWithEmail(email, password);
+  };
+
   return (
-    <SafeAreaView style={style.container}>
-      <View style={style.textContainer}>
-        <Text style={style.title}>{"Sign up now"}</Text>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.textContainer}>
+        <Text style={styles.title}>{"Sign up now"}</Text>
         <Spacer />
-        <Text style={style.subtitle}>
-          {"Please fill the details and create account"}
-        </Text>
+        <Text style={styles.subtitle}>{"Please fill the details and create an account"}</Text>
       </View>
-      <View style={style.inputContainer}>
-        <RNInput
-          placeholder="name"
-          value={name}
-          onChangeText={(val: string) => {
-            setName(val);
-          }}
-        />
-        <RNInput
-          placeholder="email"
-          value={email}
-          onChangeText={(val: string) => {
-            setEmail(val);
-          }}
-        />
-        <RNInput
-          placeholder="password"
-          value={password}
-          onChangeText={(val: string) => {
-            setPassword(val);
-          }}
-          secureTextEntry
-        />
+      <View style={styles.inputContainer}>
+        <RNInput placeholder="Name" value={name} onChangeText={setName} />
+        <RNInput placeholder="Email" value={email} onChangeText={setEmail} />
+        <RNInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
         <Spacer />
-        <Spacer />
-        <RNButton
-          title={"Sign up"}
-          onPress={function (): void {
-            loginGoogle(email, password);
-          }}
-        />
-        <Spacer />
-        <Spacer />
+        <RNButton title={"Sign up"} onPress={handleSignUp} />
         <Spacer />
         <View style={{ alignItems: "center" }}>
           <Text style={{ color: Colors.light.greyText }}>
-            {"Already have an account "}
-            <Text
-              onPress={navigateToSignUp}
-              style={{ color: "#FF7029", fontWeight: "500" }}
-            >
+            {"Already have an account? "}
+            <Text onPress={navigateToSignIn} style={{ color: "#FF7029", fontWeight: "500" }}>
               {"Sign in"}
             </Text>
           </Text>
@@ -104,7 +67,7 @@ export default function SignUp() {
   );
 }
 
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
