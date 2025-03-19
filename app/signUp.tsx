@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, StyleSheet, Alert } from "react-native";
+import { View, Text, SafeAreaView, StyleSheet, Alert, ActivityIndicator } from "react-native";
 import React, { useState } from "react";
 import { moderateScale } from "@/constants/responsive";
 import { Colors } from "@/constants/Colors";
@@ -7,28 +7,45 @@ import RNButton from "@/components/button";
 import Spacer from "@/components/spacer";
 import { useRouter } from "expo-router";
 import auth from "@react-native-firebase/auth";
+import firestore from "@react-native-firebase/firestore"; // Import Firestore
 
 export default function SignUp() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false); // Loading state
 
   const router = useRouter();
   const navigateToSignIn = () => router.back();
 
   async function signUpWithEmail(email: string, password: string) {
+    setLoading(true); // Set loading to true
     try {
       const userCredential = await auth().createUserWithEmailAndPassword(email, password);
-      console.log("User signed up:", userCredential.user);
-      Alert.alert("Success", "Sign-up successful!");
+      console.log("User  signed up:", userCredential.user);
+
+      // Store user data in Firestore
+      await firestore().collection('users').doc(userCredential.user.uid).set({
+        name: name,
+        email: email,
+        createdAt: firestore.FieldValue.serverTimestamp(), // Optional: Store the timestamp
+      });
 
       // Clear fields after successful signup
       setName("");
       setEmail("");
       setPassword("");
+      Alert.alert("Success", "Sign-up successful!",[{
+        text:"OK",
+        onPress:()=>{
+          navigateToSignIn();
+        }
+      }]);
     } catch (error: any) {
       console.log("Sign-up error:", error);
       Alert.alert("Error", error.message);
+    } finally {
+      setLoading(false); // Set loading to false after the process
     }
   }
 
@@ -52,7 +69,11 @@ export default function SignUp() {
         <RNInput placeholder="Email" value={email} onChangeText={setEmail} />
         <RNInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
         <Spacer />
-        <RNButton title={"Sign up"} onPress={handleSignUp} />
+        {loading ? ( // Show loader if loading is true
+          <ActivityIndicator size="large" color={Colors.light.primary} />
+        ) : (
+          <RNButton title={"Sign up"} onPress={handleSignUp} />
+        )}
         <Spacer />
         <View style={{ alignItems: "center" }}>
           <Text style={{ color: Colors.light.greyText }}>

@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, StyleSheet } from "react-native";
+import { View, Text, SafeAreaView, StyleSheet, Alert, ActivityIndicator } from "react-native";
 import React, { useState } from "react";
 import { moderateScale } from "@/constants/responsive";
 import { Colors } from "@/constants/Colors";
@@ -6,12 +6,13 @@ import RNInput from "@/components/RNInput";
 import RNButton from "@/components/button";
 import Spacer from "@/components/spacer";
 import { useRouter } from "expo-router";
-import RNHeader from "@/components/RNHeader";
 import { StatusBar } from "expo-status-bar";
+import auth from "@react-native-firebase/auth";
 
 export default function SignIn() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const router = useRouter();
   const navigateToSignUp = () => {
@@ -20,6 +21,25 @@ export default function SignIn() {
 
   const navigateToDashboard = () => {
     router.push("/(tabs)/home");
+  };
+
+  const handleSignIn = async () => {
+    if (!email || !password) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await auth().signInWithEmailAndPassword(email, password);
+      navigateToDashboard();
+    } catch (error: any) {
+      console.log("Sign-in error:", error);
+      Alert.alert("Error", error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -34,14 +54,14 @@ export default function SignIn() {
       </View>
       <View style={style.inputContainer}>
         <RNInput
-          placeholder="email"
+          placeholder="Email"
           value={email}
           onChangeText={(val: string) => {
             setEmail(val);
           }}
         />
         <RNInput
-          placeholder="password"
+          placeholder="Password"
           value={password}
           onChangeText={(val: string) => {
             setPassword(val);
@@ -49,15 +69,14 @@ export default function SignIn() {
           secureTextEntry
         />
         <Spacer />
-        <Spacer />
-        <RNButton
-          title={"Sign in"}
-          onPress={function (): void {
-            navigateToDashboard();
-          }}
-        />
-        <Spacer />
-        <Spacer />
+        {loading ? ( // Show loader if loading is true
+          <ActivityIndicator size="large" color={Colors.light.primary} />
+        ) : (
+          <RNButton
+            title={"Sign in"}
+            onPress={handleSignIn} // Call handleSignIn on button press
+          />
+        )}
         <Spacer />
         <View style={{ alignItems: "center" }}>
           <Text style={{ color: Colors.light.greyText }}>
