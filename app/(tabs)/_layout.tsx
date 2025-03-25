@@ -8,6 +8,7 @@ import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import Feather from "@expo/vector-icons/Feather";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -34,6 +35,15 @@ export default function TabLayout() {
           title: "Home",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="house.fill" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="trending"
+        options={{
+          title: "Trending",
+          tabBarIcon: ({ color }) => (
+            <Feather name="trending-up" size={24} color={color} />
           ),
         }}
       />

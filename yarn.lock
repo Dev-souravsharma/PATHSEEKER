@@ -2117,6 +2117,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@google/generative-ai@npm:^0.24.0":
+  version: 0.24.0
+  resolution: "@google/generative-ai@npm:0.24.0"
+  checksum: d47c9303404015b1fc5060bb5b13f0cea9642b8988f6e2e1e2463978fa9541cc055c457f59b04f73c6d1c7fe69600311ed75c067fc1605ac57fcb3044e63c4c4
+  languageName: node
+  linkType: hard
+
 "@grpc/grpc-js@npm:~1.9.0":
   version: 1.9.15
   resolution: "@grpc/grpc-js@npm:1.9.15"
@@ -8761,6 +8768,7 @@ __metadata:
   dependencies:
     "@babel/core": ^7.25.2
     "@expo/vector-icons": ^14.0.2
+    "@google/generative-ai": ^0.24.0
     "@react-native-firebase/app": ^21.11.0
     "@react-native-firebase/auth": ^21.11.0
     "@react-native-firebase/firestore": ^21.11.0

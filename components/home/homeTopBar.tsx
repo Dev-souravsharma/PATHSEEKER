@@ -1,20 +1,23 @@
 import { View, Text, StyleSheet, Pressable, Alert } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Colors } from "@/constants/Colors";
+import Feather from "@expo/vector-icons/Feather";
+import { useRouter } from "expo-router";
 
 interface Props {
-  name:string
+  name: string;
 }
 
-export default function HomeTopBar({name}:Props) {
+export default function HomeTopBar({ name }: Props) {
+  const router = useRouter();
   return (
     <View style={style.container}>
       <Text style={style.title}>{`Hello,${name || ""} !`}</Text>
       <Pressable
         style={style.bellBackground}
-        onPress={() => Alert.alert("Noti")}
+        onPress={() => router.navigate('/trending')}
       >
-        <MaterialCommunityIcons name="bell" size={24} color="white" />
+        <Feather name="trending-up" size={20} color={"white"} />
       </Pressable>
     </View>
   );
