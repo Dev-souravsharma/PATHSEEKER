@@ -34,7 +34,7 @@ export default function HomeScreen() {
 
     setIsLoading(true);
     try {
-      const apiKey = "AIzaSyAcQ-wdzHZhVaXS1mSS6rjxRz4vQFHCZCc";
+      const apiKey = "replace with api key";
 
       const recommendations = await generateJobRecommendations(
         interestsToUse,
