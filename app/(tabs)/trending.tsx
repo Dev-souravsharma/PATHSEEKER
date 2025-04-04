@@ -36,7 +36,7 @@ export default function Trending() {
 
     setIsLoading(true);
     try {
-      const apiKey = "AIzaSyAcQ-wdzHZhVaXS1mSS6rjxRz4vQFHCZCc";
+      const apiKey = "";
 
       const recommendations = await generateTrendingJobRecommendations(
         interestsToUse,
