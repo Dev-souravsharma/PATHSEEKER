@@ -12,7 +12,7 @@ export interface JobRecommendationProps {
   matchPercentage: number;
 }
 
-export async function generateJobRecommendations(
+export async function generateTrendingJobRecommendations(
   interests: string[],
   apiKey: string,
   skills:string,
@@ -28,14 +28,12 @@ export async function generateJobRecommendations(
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     // Construct the prompt
-    const prompt = `Generate a detailed JSON array of job recommendations based on these professional interests: ${interests.join(
-      ", "
-    )},country:${country} skills:${skills} , Education:${education} and other details: ${other}. 
+    const prompt = `Generate a detailed JSON array of current trending job recommendations based on country:${country}. 
 
     Provide recommendations in this exact JSON format:
     [
       {
-        "id": "unique_id_string",
+        "id": "unique_uid_string",
         "title": "Job Title",
         "company": "Company Name",
         "location": "City, State",
@@ -48,7 +46,7 @@ export async function generateJobRecommendations(
 
     Requirements:
     - Generate 10-20 job recommendations
-    - Recommendations must be directly relevant to: ${interests.join(", ")}
+    - Recommendations must be directly relevant to: ${country}
     - Include diverse roles across these interests
     - Provide realistic, current job market information`;
 

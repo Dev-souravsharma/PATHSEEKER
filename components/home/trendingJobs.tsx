@@ -12,7 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { moderateScale } from "@/constants/responsive";
 
 // Job Recommendation Interface (matching the one in HomeScreen)
-interface JobRecommendation {
+interface TrendingJobs {
   id: string;
   title: string;
   company: string;
@@ -23,26 +23,26 @@ interface JobRecommendation {
   matchPercentage: number;
 }
 
-interface JobRecommendationProps {
-  recommendations: JobRecommendation[];
+interface TrendingJobsProps {
+  recommendations: TrendingJobs[];
   isLoading?: boolean;
+  country: string;
   refreshing?: boolean;
   handleRefresh?: () => void;
 }
 
-export default function JobRecommendation({
+export default function TrendingJobs({
   recommendations = [],
   isLoading = false,
+  country,
   refreshing,
-  handleRefresh,
-}: JobRecommendationProps) {
+  handleRefresh
+}: TrendingJobsProps) {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={Colors.light.tint} />
-        <Text style={styles.loadingText}>
-          Generating Job Recommendations...
-        </Text>
+        <Text style={styles.loadingText}>Generating Trending Jobs ...</Text>
       </View>
     );
   }
@@ -51,7 +51,7 @@ export default function JobRecommendation({
   if (!recommendations || recommendations.length === 0) {
     return (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>No job recommendations available</Text>
+        <Text style={styles.emptyText}>No Trending Jobs available</Text>
       </View>
     );
   }
@@ -59,7 +59,7 @@ export default function JobRecommendation({
   return (
     <>
       <View style={styles.container}>
-        <Text style={styles.category}>Job Recommendations</Text>
+        <Text style={styles.category}>{`Trending Jobs ${country ? `in ${country}` : ""}`}</Text>
         {/* <Pressable style={styles.seeAllPressable}>
           <Text style={styles.seeAll}>See all</Text>
         </Pressable> */}
@@ -67,9 +67,9 @@ export default function JobRecommendation({
       <FlatList
         data={recommendations}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.listContainer}
         refreshing={refreshing}
         onRefresh={handleRefresh}
-        contentContainerStyle={styles.listContainer}
         renderItem={({ item }) => {
           return (
             <View style={styles.item}>
@@ -118,7 +118,7 @@ export default function JobRecommendation({
             </View>
           );
         }}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
       />
     </>
   );

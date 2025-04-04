@@ -5,9 +5,12 @@ import { useEffect, useState } from "react";
 import { SafeAreaView, Alert } from "react-native";
 import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
-import { JobRecommendationProps, generateJobRecommendations } from "@/utils/aiData";
+import {
+  JobRecommendationProps,
+  generateJobRecommendations,
+} from "@/utils/aiData";
 import { useUserInterests } from "@/context/useInterestProvider";
- // Import the context
+// Import the context
 
 export default function HomeScreen() {
   const [userDetails, setUserDetails] = useState<any>(null);
@@ -15,33 +18,33 @@ export default function HomeScreen() {
     JobRecommendationProps[]
   >([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   // Use the UserInterests context
   const { interests, fetchUserInterests } = useUserInterests();
 
   // Fallback default interests
   const DEFAULT_INTERESTS = [
-    "Software Development", 
-    "Cloud Computing", 
-    "Product Management"
+    "Software Development",
+    "Cloud Computing",
+    "Product Management",
   ];
 
   async function fetchRecommendations(interests?: string[]) {
     // Use provided interests or fallback to default
-    const interestsToUse = interests?.length 
-      ? interests 
-      : DEFAULT_INTERESTS;
+    const interestsToUse = interests?.length ? interests : DEFAULT_INTERESTS;
 
     setIsLoading(true);
     try {
-      const apiKey = "replace with api key";
+      const apiKey = "AIzaSyAcQ-wdzHZhVaXS1mSS6rjxRz4vQFHCZCc";
 
       const recommendations = await generateJobRecommendations(
         interestsToUse,
         apiKey,
         userDetails?.skills || "",
         userDetails?.education || "",
-        userDetails?.otherDetails || "" 
+        userDetails?.otherDetails || "",
+        userDetails?.country || ""
       );
 
       setJobRecommendations(recommendations);
@@ -56,35 +59,42 @@ export default function HomeScreen() {
     }
   }
 
-  useEffect(() => {
-    const fetchUserDetails = async () => {
-      const user = auth().currentUser;
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchUserDetails();
+    await fetchRecommendations();
+    setRefreshing(false);
+  };
 
-      if (user) {
-        try {
-          const userDoc = await firestore()
-            .collection("users")
-            .doc(user.uid)
-            .get();
 
-          if (userDoc.exists) {
-            const userData = userDoc.data();
-            setUserDetails(userData);
+  const fetchUserDetails = async () => {
+    const user = auth().currentUser;
 
-            // Fetch interests using the context method
-            await fetchUserInterests();
-          } else {
-            console.log("No such document!");
-          }
-        } catch (error) {
-          console.error("Error fetching user details: ", error);
-          Alert.alert("Oops!", "Error in fetching details");
+    if (user) {
+      try {
+        const userDoc = await firestore()
+          .collection("users")
+          .doc(user.uid)
+          .get();
+
+        if (userDoc.exists) {
+          const userData = userDoc.data();
+          setUserDetails(userData);
+
+          // Fetch interests using the context method
+          await fetchUserInterests();
+        } else {
+          console.log("No such document!");
         }
-      } else {
-        console.log("No user is signed in.");
+      } catch (error) {
+        console.error("Error fetching user details: ", error);
+        Alert.alert("Oops!", "Error in fetching details");
       }
-    };
-
+    } else {
+      console.log("No user is signed in.");
+    }
+  };
+  useEffect(() => {
     fetchUserDetails();
   }, []);
 
@@ -100,6 +110,8 @@ export default function HomeScreen() {
       <JobRecommendation
         recommendations={jobRecommendations}
         isLoading={isLoading}
+        refreshing={refreshing}
+        handleRefresh={() => {handleRefresh()}}
       />
     </SafeAreaView>
   );
