@@ -7,6 +7,9 @@ import {
   Pressable,
   FlatList,
   ActivityIndicator,
+  TouchableOpacity,
+  Alert,
+  Linking,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { moderateScale } from "@/constants/responsive";
@@ -21,6 +24,7 @@ interface JobRecommendation {
   skills: string[];
   description: string;
   matchPercentage: number;
+  applyLink:string;
 }
 
 interface JobRecommendationProps {
@@ -30,12 +34,50 @@ interface JobRecommendationProps {
   handleRefresh?: () => void;
 }
 
+interface JobAlertProps {
+  jobTitle: string;
+  companyName: string;
+  applyUrl: string;
+}
+
 export default function JobRecommendation({
   recommendations = [],
   isLoading = false,
   refreshing,
   handleRefresh,
 }: JobRecommendationProps) {
+
+
+    const showJobAlert = ({jobTitle,applyUrl,companyName}:JobAlertProps): void => {
+      Alert.alert(
+        `${jobTitle} at ${companyName}`,
+        'Would you like to apply for this position?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          { 
+            text: 'Apply', 
+            onPress: () => handleApplyPress(applyUrl)
+          },
+        ],
+        { cancelable: true }
+      );
+    }
+
+    
+  const handleApplyPress = async (url: string): Promise<void> => {
+    // Check if the URL can be opened
+    const canOpen: boolean = await Linking.canOpenURL(url);
+    
+    if (canOpen) {
+      await Linking.openURL(url);
+    } else {
+      Alert.alert('Error', 'Cannot open the application URL');
+    }
+  };
+
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -72,7 +114,9 @@ export default function JobRecommendation({
         contentContainerStyle={styles.listContainer}
         renderItem={({ item }) => {
           return (
-            <View style={styles.item}>
+            <TouchableOpacity onPress={()=>{
+              showJobAlert({jobTitle:item.title,applyUrl:item.applyLink,companyName:item.company})
+            }} style={styles.item}>
               <View style={styles.jobHeader}>
                 <Text style={styles.jobType}>{item.title}</Text>
                 <Text style={styles.company}>{item.company}</Text>
@@ -115,7 +159,7 @@ export default function JobRecommendation({
                   </View>
                 ))}
               </View>
-            </View>
+            </TouchableOpacity>
           );
         }}
         keyExtractor={(item) => item.id}

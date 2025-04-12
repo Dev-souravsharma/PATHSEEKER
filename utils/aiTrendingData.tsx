@@ -40,7 +40,8 @@ export async function generateTrendingJobRecommendations(
         "salary": "Salary Range",
         "skills": ["Skill1", "Skill2"],
         "description": "Job description",
-        "matchPercentage": 85
+        "matchPercentage": 85,
+        "applyLink": "https://example.com/jobs/unique_id_string"
       }
     ]
 

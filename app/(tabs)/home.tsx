@@ -19,7 +19,7 @@ export default function HomeScreen() {
   >([]);
   const [isLoading, setIsLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-
+  console.log(jobRecommendations)
   // Use the UserInterests context
   const { interests, fetchUserInterests } = useUserInterests();
 

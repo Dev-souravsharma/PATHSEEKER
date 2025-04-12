@@ -7,6 +7,9 @@ import {
   Pressable,
   FlatList,
   ActivityIndicator,
+  Alert,
+  Linking,
+  TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { moderateScale } from "@/constants/responsive";
@@ -21,6 +24,13 @@ interface TrendingJobs {
   skills: string[];
   description: string;
   matchPercentage: number;
+  applyLink:string;
+}
+
+interface JobAlertProps {
+  jobTitle: string;
+  companyName: string;
+  applyUrl: string;
 }
 
 interface TrendingJobsProps {
@@ -47,6 +57,36 @@ export default function TrendingJobs({
     );
   }
 
+  const showJobAlert = ({jobTitle,applyUrl,companyName}:JobAlertProps): void => {
+    Alert.alert(
+      `${jobTitle} at ${companyName}`,
+      'Would you like to apply for this position?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        { 
+          text: 'Apply', 
+          onPress: () => handleApplyPress(applyUrl)
+        },
+      ],
+      { cancelable: true }
+    );
+  }
+
+  
+const handleApplyPress = async (url: string): Promise<void> => {
+  // Check if the URL can be opened
+  const canOpen: boolean = await Linking.canOpenURL(url);
+  
+  if (canOpen) {
+    await Linking.openURL(url);
+  } else {
+    Alert.alert('Error', 'Cannot open the application URL');
+  }
+};
+
   // Render empty state if no recommendations
   if (!recommendations || recommendations.length === 0) {
     return (
@@ -72,7 +112,9 @@ export default function TrendingJobs({
         onRefresh={handleRefresh}
         renderItem={({ item }) => {
           return (
-            <View style={styles.item}>
+            <TouchableOpacity onPress={()=>{
+              showJobAlert({jobTitle:item.title,applyUrl:item.applyLink,companyName:item.company})
+            }} style={styles.item}>
               <View style={styles.jobHeader}>
                 <Text style={styles.jobType}>{item.title}</Text>
                 <Text style={styles.company}>{item.company}</Text>
@@ -115,7 +157,7 @@ export default function TrendingJobs({
                   </View>
                 ))}
               </View>
-            </View>
+            </TouchableOpacity>
           );
         }}
         keyExtractor={(item) => item.id.toString()}
